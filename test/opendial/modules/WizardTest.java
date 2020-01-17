@@ -54,6 +54,7 @@ public class WizardTest {
 	public static final String interactionFile = "test//domains//woz-dialogue.xml";
 	public static final String domainFile = "test//domains//domain-woz.xml";
 
+	/*
 	@Test
 	public void testWizardLearning() {
 		List<DialogueState> interaction =
@@ -119,5 +120,5 @@ public class WizardTest {
 			system.getModule(GUIFrame.class).getFrame().dispose();
 		}
 	}
-
+*/
 }

@@ -29,12 +29,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.Collection;
 
 import opendial.datastructs.Assignment;
 import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.conditions.VoidCondition;
 import opendial.domains.rules.effects.Effect;
 import opendial.domains.rules.parameters.FixedParameter;
+import opendial.domains.rules.parameters.Parameter;
 import opendial.templates.Template;
 
 /**
@@ -117,6 +119,8 @@ public class Rule {
 		return id;
 	}
 
+	public List<RuleCase> getCases() { return cases; }
+
 	/**
 	 * Returns the input variables (possibly underspecified, with slots to fill) for
 	 * the rule
@@ -140,11 +144,12 @@ public class Rule {
 	 * @return the matched rule output.
 	 */
 	public RuleOutput getOutput(Assignment input) {
- 
+		log.info("getOutput: current rule is " + this.toString());
+ 		log.info("getOutput(): input is " + input.toString());
 		RuleOutput output = new RuleOutput(ruleType);
 		RuleGrounding groundings = getGroundings(input);
 		for (Assignment g : groundings.getAlternatives()) {
-
+			log.info("getOutput(): assignment is " + g.toString());
 			Assignment full = !(g.isEmpty()) ? new Assignment(input, g) : input;
 
 			RuleOutput match = cases.stream()
@@ -152,6 +157,7 @@ public class Rule {
 					.findFirst().orElse(new RuleOutput(ruleType));
 
 			match = match.ground(full);
+			log.info("getOutput(): match is " + match.toString());
 			output.addOutput(match);
 
 		}
@@ -263,7 +269,7 @@ public class Rule {
 	 * Representation of a rule case, i.e. a condition associated with a rule output
 	 *
 	 */
-	final class RuleCase {
+	public final class RuleCase {
 
 		// the condition for the rule (can be a VoidCondition)
 		final Condition condition;
@@ -290,6 +296,10 @@ public class Rule {
 		public Set<Effect> getEffects() {
 			return output.getEffects();
 		}
+
+		public Collection<Parameter> getParameters() { return output.getParameters(); }
+
+		public Condition getCondition() { return condition; }
 
 		/**
 		 * Returns the groundings associated with the rule case, given the input

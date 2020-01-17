@@ -208,6 +208,10 @@ public class RuleOutput {
 	 * @return true if void, false otherwise
 	 */
 	public boolean isVoid() {
+		for (Map.Entry<Effect, Parameter> entry : effects.entrySet()) {
+			log.info("isVoid(): Effect is " + entry.getKey().toString() + "; Parameter is " + entry.getValue().toString());
+		}
+		log.info("isVoid(): type is " + type);
 		return effects.isEmpty() || (type == RuleType.PROB && effects.size() == 1
 				&& effects.containsKey(new Effect()));
 	}

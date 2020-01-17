@@ -31,6 +31,9 @@ import java.util.List;
 
 import opendial.DialogueState;
 import opendial.domains.rules.Rule;
+import opendial.templates.FunctionalTemplate;
+import opendial.templates.RelationalTemplate;
+import opendial.templates.StringTemplate;
 import opendial.templates.Template;
 
 /**
@@ -173,7 +176,7 @@ public class Model {
 
 	/**
 	 * Returns true if the model is triggered by the updated variables.
-	 * 
+	 *
 	 * @param state the dialogue state
 	 * @param updatedVars the updated variables
 	 * @return true if triggered, false otherwise
@@ -207,6 +210,18 @@ public class Model {
 		for (Template trigger : triggers) {
 			for (String updatedVar : updatedVars) {
 				if (trigger.match(updatedVar).isMatching()) {
+					if (trigger instanceof StringTemplate) {
+						StringTemplate t = (StringTemplate)trigger;
+						log.info("isTriggered(): StringTemplate updatedVar is " + updatedVar + "; trigger string is " + t.toString());
+					}
+					else if (trigger instanceof RelationalTemplate) {
+						RelationalTemplate t = (RelationalTemplate)trigger;
+						log.info("isTriggered(): RelationalTemplate updatedVar is " + updatedVar + "; trigger slot is " + t.getSlots());
+					}
+					else if (trigger instanceof FunctionalTemplate) {
+						FunctionalTemplate t = (FunctionalTemplate)trigger;
+						log.info("isTriggered(): FunctionalTemplate updatedVar is " + updatedVar + "; trigger string is " + t.toString());
+					}
 					return true;
 				}
 			}

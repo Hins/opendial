@@ -134,8 +134,11 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 		for (Assignment input : conditions) {
 			input.addAssignment(filledSlots);
 
+			log.info("In AnchoredRule(): input is " + input.toString());
 			RuleOutput output = getCachedOutput(input);
+			log.info("In AnchoredRule(): prev relevant is " + relevant);
 			relevant = relevant || !output.isVoid();
+			log.info("In AnchoredRule(): after relevant is " + relevant);
 			// looping on all alternative effects in the output
 			for (Map.Entry<Effect, Parameter> o : output.getPairs()) {
 				Effect effect = o.getKey();

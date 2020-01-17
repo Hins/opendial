@@ -79,6 +79,9 @@ public class TextOnlyInterface implements Module {
 				System.out.println("Type new input: ");
 				String input = new Scanner(System.in).nextLine();
 				Map<String, Double> table = StringUtils.getTableFromInput(input);
+				for (Map.Entry<String, Double> entry : table.entrySet()) {
+					log.info("key is " + entry.getKey() + " value is " + entry.getValue());
+				}
 				if (!paused && !table.isEmpty()) {
 					system.addUserInput(table);
 				}

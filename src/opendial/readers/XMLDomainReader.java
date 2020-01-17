@@ -23,6 +23,7 @@
 
 package opendial.readers;
 
+import java.util.Map;
 import java.util.logging.*;
 import java.io.File;
 import java.util.List;
@@ -38,6 +39,14 @@ import opendial.bn.values.Value;
 import opendial.domains.Domain;
 import opendial.domains.Model;
 import opendial.domains.rules.Rule;
+import opendial.domains.rules.Rule.RuleType;
+import opendial.domains.rules.conditions.*;
+import opendial.domains.rules.parameters.Parameter;
+import opendial.templates.FunctionalTemplate;
+import opendial.templates.StringTemplate;
+import opendial.templates.RelationalTemplate;
+import opendial.domains.rules.effects.Effect;
+import opendial.templates.Template;
 import opendial.utils.XMLUtils;
 
 import org.w3c.dom.Document;
@@ -138,7 +147,7 @@ public class XMLDomainReader {
 
 		// extracting rule-based probabilistic model
 		if (mainNode.getNodeName().equals("domain")) {
-
+            log.info("handle domain");
 			NodeList firstElements = mainNode.getChildNodes();
 			for (int j = 0; j < firstElements.getLength(); j++) {
 				Node node = firstElements.item(j);
@@ -148,12 +157,14 @@ public class XMLDomainReader {
 
 		// extracting settings
 		else if (fullExtract && mainNode.getNodeName().equals("settings")) {
+			log.info("handle settings");
 			Properties settings = XMLUtils.extractMapping(mainNode);
 			domain.getSettings().fillSettings(settings);
 		}
 		// extracting custom functions
 		else if (fullExtract && mainNode.getNodeName().equals("function")
 				&& mainNode.getAttributes().getNamedItem("name") != null) {
+			log.info("handle function");
 			String name =
 					mainNode.getAttributes().getNamedItem("name").getNodeValue();
 			String functionStr = mainNode.getTextContent().trim();
@@ -172,14 +183,67 @@ public class XMLDomainReader {
 
 		// extracting initial state
 		else if (fullExtract && mainNode.getNodeName().equals("initialstate")) {
+			log.info("handle initialstate");
 			BNetwork state = XMLStateReader.getBayesianNetwork(mainNode);
 			domain.setInitialState(new DialogueState(state));
+			log.info("BNetwork initial state is " + state.toString());
 			// log.fine(state);
 		}
 
 		// extracting rule-based probabilistic model
 		else if (fullExtract && mainNode.getNodeName().equals("model")) {
 			Model model = createModel(mainNode);
+			/* log.info("Model is " + model.toString());
+			for (Template t : model.getTriggers()) {
+				if (t instanceof StringTemplate) {
+					StringTemplate e = (StringTemplate)t;
+					log.info("String template name is " + e.toString());
+					log.info("String template slots is " + e.getSlots());
+				}
+				if (t instanceof RelationalTemplate) {
+					RelationalTemplate e = (RelationalTemplate)t;
+					log.info("Relational template name is " + e.toString());
+					log.info("Relational template slots is " + e.getSlots());
+				}
+				if (t instanceof FunctionalTemplate) {
+					FunctionalTemplate e = (FunctionalTemplate)t;
+					log.info("Functional template name is " + e.toString());
+					log.info("Functional template slots is " + e.getSlots());
+				}
+			}
+			for (Rule r : model.getRules()) {
+				for (Effect e : r.getEffects()) {
+					log.info("effect is + " + e.toString());
+				}
+				for (Rule.RuleCase rc : r.getCases()) {
+					log.info("Model->Rule->Rulecase rulecase is " + rc.toString());
+					Condition c = rc.getCondition();
+					if (c instanceof VoidCondition) {
+						log.info("Model->Rule->Rulecase->Condition condition is VoidCondition, slots is " + c.getSlots());
+					}
+					if (c instanceof BasicCondition) {
+						BasicCondition b = (BasicCondition)c;
+						log.info("Model->Rule->Rulecase->Condition condition is BasicCondition, variable name is " + b.getVariable().toString() + " relation is " + b.getRelation().toString());
+						log.info("Model->Rule->Rulecase->Condition condition is BasicCondition, slots is " + b.getSlots());
+					}
+					if (c instanceof ComplexCondition) {
+						ComplexCondition com = (ComplexCondition)c;
+						log.info("Model->Rule->Rulecase->Condition condition is ComplexCondition, slots is " + com.getSlots());
+					}
+					if (c instanceof NegatedCondition) {
+						NegatedCondition ndc = (NegatedCondition)c;
+						log.info("Model->Rule->Rulecase->Condition condition is NegatedCondition, slots is " + ndc.getSlots());
+						log.info("Model->Rule->Rulecase->Condition condition is NegatedCondition, condition is " + ndc.getInitCondition().toString());
+					}
+					for (Effect ef : rc.getEffects()) {
+						log.info("Model->Rule->Rulecase->Effect effect is " + ef.toString());
+					}
+					for (Parameter p : rc.getParameters()) {
+						log.info("Model->Rule->Rulecase->Parameter parameter is " + p.getVariables());
+					}
+				}
+				log.info("rule type is " + r.getRuleType());
+			} */
 			// log.fine(model);
 			domain.addModel(model);
 		}
@@ -187,13 +251,14 @@ public class XMLDomainReader {
 		// extracting parameters
 		else if (fullExtract && mainNode.getNodeName().equals("parameters")) {
 			BNetwork parameters = XMLStateReader.getBayesianNetwork(mainNode);
+			log.info("BNetwork parameters is " + parameters.toString());
 			domain.setParameters(parameters);
 		}
 
 		// extracting imported references
 		else if (mainNode.getNodeName().equals("import") && mainNode.hasAttributes()
 				&& mainNode.getAttributes().getNamedItem("href") != null) {
-
+			log.info("handle domain recursively");
 			String fileName =
 					mainNode.getAttributes().getNamedItem("href").getNodeValue();
 			String filepath = rootpath==null? fileName : rootpath + File.separator + fileName;

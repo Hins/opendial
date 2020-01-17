@@ -48,15 +48,18 @@ import opendial.domains.Domain;
 import opendial.domains.Model;
 import opendial.gui.GUIFrame;
 import opendial.gui.TextOnlyInterface;
-import opendial.modules.AudioModule;
-import opendial.modules.DialogueImporter;
-import opendial.modules.DialogueRecorder;
-import opendial.modules.ForwardPlanner;
-import opendial.modules.Module;
-import opendial.modules.RemoteConnector;
+import opendial.modules.*;
+import opendial.modules.examples.FlightBookingExample;
+import opendial.modules.examples.WizardControl;
+import opendial.modules.simulation.RewardLearner;
 import opendial.modules.simulation.Simulator;
+import opendial.plugins.MaryTTS;
+import opendial.plugins.NuanceSpeech;
+import opendial.plugins.SphinxASR;
 import opendial.readers.XMLDomainReader;
 import opendial.readers.XMLDialogueReader;
+
+import javax.xml.soap.Text;
 
 /**
  * <p>
@@ -110,10 +113,11 @@ public class DialogueSystem {
 
 		// inserting standard modules
 		modules = new ArrayList<Module>();
-		modules.add(new GUIFrame(this));
+		// modules.add(new GUIFrame(this));
 		modules.add(new DialogueRecorder(this));
 		modules.add(new RemoteConnector(this));
 		modules.add(new ForwardPlanner(this));
+		modules.add(new TextOnlyInterface(this));
 		domain = new Domain();
 
 	}
@@ -145,6 +149,48 @@ public class DialogueSystem {
 		paused = false;
 		for (Module module : new ArrayList<Module>(modules)) {
 			try {
+				if (module instanceof TextOnlyInterface) {
+					log.info("module is TextOnlyInterface");
+				}
+				else if (module instanceof  DialogueRecorder) {
+					log.info("module is DialogueRecorder");
+				}
+				else if (module instanceof ForwardPlanner) {
+					log.info("module is ForwardPlanner");
+				}
+				else if (module instanceof RemoteConnector) {
+					log.info("module is RemoteConnector");
+				}
+				else if (module instanceof AudioModule) {
+					log.info("module is AudioModule");
+				}
+				else if (module instanceof WizardLearner) {
+					log.info("module is WizardLearner");
+				}
+				else if (module instanceof WizardControl) {
+					log.info("module is WizardControl");
+				}
+				else if (module instanceof FlightBookingExample) {
+					log.info("module is FlightBookingExample");
+				}
+				else if (module instanceof Simulator) {
+					log.info("module is Simulator");
+				}
+				else if (module instanceof RewardLearner) {
+					log.info("module is RewardLearner");
+				}
+				else if (module instanceof MaryTTS) {
+					log.info("module is MaryTTS");
+				}
+				else if (module instanceof SphinxASR) {
+					log.info("module is SphinxASR");
+				}
+				else if (module instanceof NuanceSpeech) {
+					log.info("module is NuanceSpeech");
+				}
+				else {
+					log.info("module is other");
+				}
 				if (!module.isRunning()) {
 					module.start();
 				}
@@ -363,10 +409,12 @@ public class DialogueSystem {
 	public Set<String> addUserInput(Map<String, Double> userInput) {
 		String var = (!settings.invertedRole) ? settings.userInput
 				: settings.systemOutput;
+		log.info("var is " + var);
 		CategoricalTable.Builder builder = new CategoricalTable.Builder(var);
 		for (String input : userInput.keySet()) {
 			builder.addRow(input, userInput.get(input));
 		}
+		log.info("build is " + builder.toString());
 		return addContent(builder.build());
 	}
 
@@ -649,6 +697,7 @@ public class DialogueSystem {
 
 			// finding the new variables that must be processed
 			Set<String> toProcess = curState.getNewVariables();
+			log.info("update toProcess is " + toProcess);
 
 			synchronized (curState) {
 
@@ -657,7 +706,9 @@ public class DialogueSystem {
 
 				// applying the domain models
 				for (Model model : domain.getModels()) {
-					if (model.isTriggered(curState, toProcess)) {
+					log.info("update(): model id is " + model.getId());
+					// if (model.isTriggered(curState, toProcess)) {
+					if (model.isTriggered(toProcess)) {
 						boolean change = model.trigger(curState);
 						if (change && model.isBlocking()) {
 							break;
@@ -853,14 +904,17 @@ public class DialogueSystem {
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
-
 		DialogueSystem system = new DialogueSystem();
 		String domainFile = System.getProperty("domain");
+		domainFile = "/home/work/xtpan/opendial/test/domains/example-flightbooking.xml";
 		String dialogueFile = System.getProperty("dialogue");
+		// dialogueFile = "/home/work/xtpan/opendial/test/domains/dialogue.xml";
 		String simulatorFile = System.getProperty("simulator");
+		// simulatorFile = "/home/work/xtpan/opendial/test/domains/domain-simulator.xml";
 
 		system.getSettings().fillSettings(System.getProperties());
 		if (domainFile != null) {
+			log.info("domainFile is not null");
 			Domain domain;
 			try {
 				domain = XMLDomainReader.extractDomain(domainFile);
@@ -874,9 +928,11 @@ public class DialogueSystem {
 			system.changeDomain(domain);
 		}
 		if (dialogueFile != null) {
+			log.info("dialogueFile is not null");
 			system.importDialogue(dialogueFile);
 		}
 		if (simulatorFile != null) {
+			log.info("simulatorFile is not null");
 			Simulator simulator = new Simulator(system,
 					XMLDomainReader.extractDomain(simulatorFile));
 			log.info("Simulator with domain " + simulatorFile

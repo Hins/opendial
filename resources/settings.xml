@@ -13,4 +13,5 @@
 	<discretisation>50</discretisation>
 	<recording>last</recording>
 	<timeout>400</timeout>
+	<domain>/home/work/xtpan/opendial/test/domains/dialogue.xml</domain>
 </settings>

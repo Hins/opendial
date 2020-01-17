@@ -224,16 +224,19 @@ public class DialogueState extends BNetwork {
 	 */
 	public void addToState(ProbDistribution distrib) {
 		String variable = distrib.getVariable() + "'";
+		log.info("addToState: variable is " + variable);
 		setAsCommitted(variable);
 		distrib.modifyVariableId(distrib.getVariable(), variable);
 		ChanceNode newNode = new ChanceNode(variable, distrib);
 
 		if (hasNode(variable)) {
+			log.info("addToState: remove existing variable");
 			BNode toRemove = getNode(variable);
 			removeNodes(toRemove.getDescendantIds());
 			removeNode(toRemove.getId());
 		}
 		for (String inputVar : distrib.getInputVariables()) {
+			log.info("addToState: input variable is " + inputVar);
 			if (hasChanceNode(inputVar)) {
 				newNode.addInputNode(getChanceNode(inputVar));
 			}
@@ -334,6 +337,7 @@ public class DialogueState extends BNetwork {
 			if (arule.isRelevant()) {
 				switch (r.getRuleType()) {
 				case PROB:
+					log.info("applyRule(): r is " + r.toString() + "; filledSlot is " + filledSlot.toString());
 					addProbabilityRule(arule);
 					break;
 				case UTIL:
@@ -680,6 +684,7 @@ public class DialogueState extends BNetwork {
 
 			// if the output node does not yet exist, create it
 			if (!hasNode(updatedVar)) {
+				log.info("addProbabilityRule(): updatedVar is " + updatedVar);
 				outputDistrib = new OutputDistribution(updatedVar);
 				outputNode = new ChanceNode(updatedVar, outputDistrib);
 				addNode(outputNode);
@@ -743,12 +748,17 @@ public class DialogueState extends BNetwork {
 	 * @param outputNode the output node to connect
 	 */
 	private void connectToPredictions(ChanceNode outputNode) {
+		Exception e = new Exception("this is a log");
+		e.printStackTrace();
 
 		String outputVar = outputNode.getId();
+		log.info("connectToPredictions outputVar is " + outputVar);
 
 		// adding the connection between the predicted and observed values
 		String baseVar = outputVar.substring(0, outputVar.length() - 1);
+		log.info("connectToPredictions baseVar is " + baseVar);
 		String predictEquiv = baseVar + "^p";
+		log.info("connectToPredictions prior is " + predictEquiv);
 		if (hasChanceNode(predictEquiv) && !outputVar.contains("^p")) {
 			ChanceNode equalityNode = new ChanceNode("=_" + baseVar,
 					new EquivalenceDistribution(baseVar));
