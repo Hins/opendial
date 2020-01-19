@@ -41,7 +41,11 @@ import opendial.bn.distribs.CategoricalTable;
 import opendial.bn.distribs.IndependentDistribution;
 import opendial.bn.distribs.MultivariateDistribution;
 import opendial.bn.distribs.ProbDistribution;
+import opendial.bn.nodes.ActionNode;
+import opendial.bn.nodes.UtilityNode;
 import opendial.bn.values.Value;
+import opendial.bn.nodes.BNode;
+import opendial.bn.nodes.ChanceNode;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.SpeechData;
 import opendial.domains.Domain;
@@ -208,6 +212,7 @@ public class DialogueSystem {
 		synchronized (curState) {
 			curState.setAsNew();
 			update();
+			log.info("cold start complete");
 		}
 	}
 
@@ -706,14 +711,37 @@ public class DialogueSystem {
 
 				// applying the domain models
 				for (Model model : domain.getModels()) {
-					log.info("update(): model id is " + model.getId());
+					// log.info("update(): model id is " + model.getId());
 					// if (model.isTriggered(curState, toProcess)) {
 					if (model.isTriggered(toProcess)) {
+						log.info("trigger model is " + model.getId());
 						boolean change = model.trigger(curState);
 						if (change && model.isBlocking()) {
 							break;
 						}
 					}
+				}
+				for (ChanceNode cn : curState.getChanceNodes()) {
+					log.info("DialogueSystem ChanceNode id is " + cn.getId() + "; input node is " + cn.getInputNodeIds()
+							+ "; output node is " + cn.getOutputNodesIds());
+				}
+				for (UtilityNode un : curState.getUtilityNodes()) {
+					log.info("DialogueSystem UtilityNode id is " + un.getId() + "; input node is " + un.getInputNodeIds()
+							+ "; output node is " + un.getOutputNodesIds());
+				}
+				for (BNode bn : curState.getNodes()) {
+					log.info("DialogueSystem BNode id is " + bn.getId() + "; input node is " + bn.getInputNodeIds()
+							+ "; output node is " + bn.getOutputNodesIds());
+				}
+				for (ActionNode an : curState.getActionNodes()) {
+					log.info("DialogueSystem ActionNode id is " + an.getId() + "; input node is " + an.getInputNodeIds()
+							+ "; output node is " + an.getOutputNodesIds());
+					for (Value v : an.getValues()) {
+						log.info("DialogueSystem ActionNode value is " + v.toString());
+					}
+				}
+				for (Map.Entry<String, Value> entry : curState.getEvidence().getPairs().entrySet()) {
+					log.info("slot key is " + entry.getKey() + "; slot value is " + entry.getValue().toString());
 				}
 
 				// triggering the domain modules

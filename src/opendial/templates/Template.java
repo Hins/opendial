@@ -84,6 +84,7 @@ public interface Template extends Comparable<Template> {
 			}
 		}
 		else if (RegexTemplate.isPossibleRegex(value)) {
+			// log.info("create arithmetic template " + value);
 			try {
 				if (ArithmeticTemplate.isArithmeticExpression(value)) {
 					return new ArithmeticTemplate(value);
@@ -96,6 +97,8 @@ public interface Template extends Comparable<Template> {
 			}
 		}
 		else {
+			// log.info("create string template " + value);
+			// log.info("StringTemplate slots is " + new StringTemplate(value).getSlots());
 			return new StringTemplate(value);
 		}
 	}

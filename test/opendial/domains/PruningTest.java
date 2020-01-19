@@ -67,6 +67,7 @@ public class PruningTest {
 		}
 	}
 
+	/*
 	@Test
 	public void testPruning0() throws InterruptedException {
 
@@ -183,4 +184,5 @@ public class PruningTest {
 		system.getState().reset(initialState);
 
 	}
+	*/
 }

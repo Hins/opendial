@@ -44,6 +44,7 @@ import opendial.bn.nodes.BNode;
 import opendial.bn.nodes.ChanceNode;
 import opendial.bn.nodes.UtilityNode;
 import opendial.bn.values.ValueFactory;
+import opendial.bn.values.Value;
 import opendial.datastructs.Assignment;
 import opendial.datastructs.ValueRange;
 import opendial.domains.rules.Rule;
@@ -335,9 +336,9 @@ public class DialogueState extends BNetwork {
 		for (Assignment filledSlot : slots) {
 			AnchoredRule arule = new AnchoredRule(r, this, filledSlot);
 			if (arule.isRelevant()) {
+				log.info("applyRule(): r is " + r.toString() + "; filledSlot is " + filledSlot.toString());
 				switch (r.getRuleType()) {
 				case PROB:
-					log.info("applyRule(): r is " + r.toString() + "; filledSlot is " + filledSlot.toString());
 					addProbabilityRule(arule);
 					break;
 				case UTIL:
@@ -346,6 +347,7 @@ public class DialogueState extends BNetwork {
 				}
 			}
 		}
+		log.info("applyRule complete");
 	}
 
 	/**
@@ -354,6 +356,7 @@ public class DialogueState extends BNetwork {
 	 */
 	public void setAsNew() {
 		for (ChanceNode var : new ArrayList<ChanceNode>(getChanceNodes())) {
+			log.info("var id is " + var.getId());
 			var.setId(var.getId() + "'");
 		}
 	}
@@ -501,6 +504,8 @@ public class DialogueState extends BNetwork {
 					.map(c -> t.match(c)).filter(r -> r.isMatching())
 					.forEach(r -> range.addAssign(r));
 		}
+		log.info("getMatchingSlots() range size is " + range.getNbCombinations());
+		log.info("getMatchingSlots() range value variables is " + range.getVariables());
 		return range;
 	}
 
@@ -533,6 +538,7 @@ public class DialogueState extends BNetwork {
 		for (String var : getChanceNodeIds()) {
 			if (var.endsWith("'")) {
 				newVars.add(var.substring(0, var.length() - 1));
+				log.info("newVars is " + var.substring(0, var.length() - 1));
 			}
 		}
 		return newVars;
@@ -674,6 +680,7 @@ public class DialogueState extends BNetwork {
 		Stream.concat(arule.getInputVariables().stream(),
 				arule.getParameters().stream()).distinct()
 				.forEach(i -> ruleNode.addInputNode(getChanceNode(i)));
+		log.info("addProbabilityRule() ruleNode id is " + ruleNode.getId());
 		addNode(ruleNode);
 
 		// looping on each output variable
@@ -687,6 +694,7 @@ public class DialogueState extends BNetwork {
 				log.info("addProbabilityRule(): updatedVar is " + updatedVar);
 				outputDistrib = new OutputDistribution(updatedVar);
 				outputNode = new ChanceNode(updatedVar, outputDistrib);
+				log.info("addProbabilityRule() outputNode id is " + outputNode.getId());
 				addNode(outputNode);
 
 				// connecting to prior predictions
@@ -719,6 +727,7 @@ public class DialogueState extends BNetwork {
 		arule.getInputVariables()
 				.forEach(i -> ruleNode.addInputNode(getChanceNode(i)));
 		arule.getParameters().forEach(i -> ruleNode.addInputNode(getChanceNode(i)));
+		log.info("addUtilityRule() ruleNode id is " + ruleNode.getId());
 		addNode(ruleNode);
 
 		// retrieving the set of actions and their values
@@ -731,6 +740,7 @@ public class DialogueState extends BNetwork {
 			// if the action variable does not yet exist, create it
 			if (!hasActionNode(actionVar)) {
 				actionNode = new ActionNode(actionVar);
+				log.info("addUtilityRule() actionNode id is " + actionNode.getId());
 				addNode(actionNode);
 			}
 			else {
@@ -748,9 +758,6 @@ public class DialogueState extends BNetwork {
 	 * @param outputNode the output node to connect
 	 */
 	private void connectToPredictions(ChanceNode outputNode) {
-		Exception e = new Exception("this is a log");
-		e.printStackTrace();
-
 		String outputVar = outputNode.getId();
 		log.info("connectToPredictions outputVar is " + outputVar);
 

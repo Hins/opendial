@@ -171,6 +171,10 @@ public class Model {
 				e.printStackTrace();
 			}
 		}
+		/*for (String id : state.getChanceNodeIds()) {
+			log.info("After trigger, dialogue state id is " + id);
+		}*/
+
 		return !state.getNewVariables().isEmpty() || !state.getNewActionVariables().isEmpty();
 	}
 

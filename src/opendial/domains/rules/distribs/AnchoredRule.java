@@ -117,6 +117,8 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 			if (t.isFilledBy(filledSlots)) {
 				String t2 = t.fillSlots(filledSlots).toString();
 				if (state.hasChanceNode(t2)) {
+					log.info("AnchoredRule(): filledSlots is " + filledSlots.toString());
+					log.info("AnchoredRule(): target template is " + t.toString() + "; slot filling result is " + t2);
 					inputs.addValues(t2, state.getChanceNode(t2).getValues());
 				}
 			}

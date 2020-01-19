@@ -455,6 +455,7 @@ public class XMLRuleReader {
 		Template tvar = Template.create(var);
 		Template tval = Template.create(value);
 		if (tvar.isUnderspecified() || tval.isUnderspecified()) {
+			log.info("underspecified sub effect tvar is " + var + "; tval is " + tval);
 			return new TemplateEffect(tvar, tval, priority, exclusive, negated);
 		}
 		else {

@@ -130,8 +130,13 @@ public class Rule {
 	public Set<Template> getInputVariables() {
 		Set<Template> inputVars = new HashSet<Template>();
 		for (RuleCase c : cases) {
+			// log.info("case condition is " + c.getCondition().toString() + "; ");
 			inputVars.addAll(c.getInputVariables());
 		}
+		/* for (Template t : inputVars) {
+			log.info("getInputVariables() t is " + t.toString());
+		}
+		log.info("getInputVariables() inputVars size is " + inputVars.size()); */
 		return inputVars;
 	}
 
@@ -346,8 +351,12 @@ public class Rule {
 		public Set<Template> getInputVariables() {
 			Set<Template> inputVars = new HashSet<Template>();
 			inputVars.addAll(condition.getInputVariables());
+			/* for (Template t : condition.getInputVariables()) {
+				log.info("template name is " + t.toString() + "; slots is " + t.getSlots());
+			} */
 			condition.getSlots().stream().map(s -> Template.create(s)).forEach(t -> inputVars.add(t)); 
 			for (Effect effect : getEffects()) {
+				// log.info("effect value slots is " + effect.getValueSlots() + "; output variables is " + effect.getOutputVariables());
 				for (String inputVariable : effect.getValueSlots()) {
 					inputVars.add(Template.create(inputVariable));
 				}

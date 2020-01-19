@@ -328,6 +328,7 @@ class RegexTemplate implements Template {
 				slots.put(var, slots.size() + 1);
 			}
 		}
+		// log.info("mine slots from RegexTemplate " + slots.keySet());
 		return slots;
 	}
 

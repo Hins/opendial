@@ -86,6 +86,7 @@ public class StringTemplate implements Template {
 		String input = str.trim();
 
 		if (input.equalsIgnoreCase(string)) {
+			log.info("str is " + input + "; string is " + string);
 			return new MatchResult(0, string.length());
 		}
 		else {
