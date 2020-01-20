@@ -130,7 +130,7 @@ public class Rule {
 	public Set<Template> getInputVariables() {
 		Set<Template> inputVars = new HashSet<Template>();
 		for (RuleCase c : cases) {
-			// log.info("case condition is " + c.getCondition().toString() + "; ");
+			// log.info("slot in rulecase is " + c.getInputVariables() + "; ");
 			inputVars.addAll(c.getInputVariables());
 		}
 		/* for (Template t : inputVars) {

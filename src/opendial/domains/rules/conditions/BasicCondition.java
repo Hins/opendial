@@ -183,9 +183,11 @@ public final class BasicCondition implements Condition {
 	 */
 	@Override
 	public boolean isSatisfiedBy(Assignment input) {
+		log.info("isSatisfiedBy input is " + input.toString());
 		if (!variable.isFilledBy(input) || !templateValue.isFilledBy(input)) {
 			return false;
 		}
+		log.info("pass");
 		BasicCondition grounded = new BasicCondition(this, input);
 		Value actualValue = input.getValue(grounded.variable.toString());
 		return grounded.isSatisfied(actualValue);

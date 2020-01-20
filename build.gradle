@@ -61,7 +61,8 @@ dependencies {
  	compile group: 'de.dfki.mary', name: 'marytts-runtime', version: '5.2-beta2'
  //	compile group: 'de.dfki.mary', name: 'voice-cmu-slt-hsmm', version: '5.2-beta2'
     compile group: 'org.apache.commons', name: 'commons-math3', version: '3.2'
-    compile group: 'edu.cmu.sphinx', name: 'sphinx4-core', version:'5prealpha-SNAPSHOT'
+	compile group: 'de.sciss', name: 'sphinx4-core', version: '1.0.0'
+//    compile group: 'edu.cmu.sphinx', name: 'sphinx4-core', version:'5prealpha-SNAPSHOT'
 //    compile group: 'edu.cmu.sphinx', name: 'sphinx4-data', version:'5prealpha-SNAPSHOT'
     compile group: 'org.maltparser', name: 'maltparser', version:'1.8.1'
     compile group: 'edu.stanford.nlp', name: 'stanford-corenlp', version:'3.5.2'
@@ -134,7 +135,7 @@ startScripts {
  */
 eclipse {
 	classpath {
-		defaultOutputDir = sourceSets.main.output.classesDir
+		defaultOutputDir = new File(sourceSets.main.output.classesDir.toString() + ":/home/work/xtpan/opendial/build/classes/java/main/")
 	}
 }
 

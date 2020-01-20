@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
+import java.util.stream.Collectors;
 
 import opendial.bn.BNetwork;
 import opendial.bn.distribs.CategoricalTable;
@@ -331,18 +332,24 @@ public class DialogueState extends BNetwork {
 	 * @param r the rule to apply.
 	 */
 	public void applyRule(Rule r) {
-
 		Set<Assignment> slots = getMatchingSlots(r.getInputVariables()).linearise();
+		log.info("slots size is " + slots.size());
+		for (Assignment a : slots) {
+			log.info("xtpan: rule is " + r.toString() + "; rule slot is " + r.getInputVariables().stream().map(t -> t.toString()).collect(Collectors.toSet()) + "; slot is " + a.getPairs().keySet());
+		}
 		for (Assignment filledSlot : slots) {
 			AnchoredRule arule = new AnchoredRule(r, this, filledSlot);
 			if (arule.isRelevant()) {
+				log.info("prev graph model is " + getChanceNodes().stream().map(c -> c.getId()).collect(Collectors.toSet()) + "; rule is " + r.toString());
 				log.info("applyRule(): r is " + r.toString() + "; filledSlot is " + filledSlot.toString());
 				switch (r.getRuleType()) {
 				case PROB:
 					addProbabilityRule(arule);
+					log.info("after graph model is " + getChanceNodes().stream().map(c -> c.getId()).collect(Collectors.toSet()) + "; rule is " + r.toString());
 					break;
 				case UTIL:
 					addUtilityRule(arule);
+					log.info("after graph model is " + getChanceNodes().stream().map(c -> c.getId()).collect(Collectors.toSet()) + "; rule is " + r.toString());
 					break;
 				}
 			}
@@ -505,7 +512,7 @@ public class DialogueState extends BNetwork {
 					.forEach(r -> range.addAssign(r));
 		}
 		log.info("getMatchingSlots() range size is " + range.getNbCombinations());
-		log.info("getMatchingSlots() range value variables is " + range.getVariables());
+		log.info("getMatchingSlots() range value variables is " + range.toString());
 		return range;
 	}
 

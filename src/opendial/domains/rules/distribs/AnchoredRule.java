@@ -44,7 +44,11 @@ import opendial.domains.rules.Rule.RuleType;
 import opendial.domains.rules.RuleOutput;
 import opendial.domains.rules.conditions.Condition;
 import opendial.domains.rules.effects.Effect;
+import opendial.domains.rules.parameters.ComplexParameter;
+import opendial.domains.rules.parameters.FixedParameter;
 import opendial.domains.rules.parameters.Parameter;
+import opendial.domains.rules.parameters.SingleParameter;
+import opendial.templates.StringTemplate;
 import opendial.templates.Template;
 
 /**
@@ -105,6 +109,7 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 		this.id = rule.getRuleId();
 		if (!filledSlots.isEmpty()) {
 			this.id += "(" + filledSlots + ")";
+			log.info("AnchoredRule(): id is " + this.id);
 		}
 		effects = new HashSet<Effect>();
 		outputs = new ValueRange();
@@ -114,7 +119,8 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 		// determines the input range
 		inputs = new ValueRange();
 		for (Template t : rule.getInputVariables()) {
-			if (t.isFilledBy(filledSlots)) {
+			log.info("AnchoredRule(): slot is " + t.toString());
+			if (t.isFilledBy(filledSlots)) {    // return True forever if t instanceof StringTemplate, that is no slot to fill
 				String t2 = t.fillSlots(filledSlots).toString();
 				if (state.hasChanceNode(t2)) {
 					log.info("AnchoredRule(): filledSlots is " + filledSlots.toString());
@@ -123,7 +129,13 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 				}
 			}
 		}
+		log.info("inputs size is " + inputs.getVariables().size() + "; rule is " + rule.toString());
 		Set<Assignment> conditions = inputs.linearise();
+		for (Assignment a : conditions) {
+			for (Map.Entry<String, Value> entry : a.getPairs().entrySet()) {
+				log.info("condition assignment key is " + entry.getKey() + "; value is " + entry.getValue().toString());
+			}
+		}
 
 		// we already start a cache if we have a probability rule
 		if (rule.getRuleType() == RuleType.PROB) {
@@ -138,6 +150,7 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 
 			log.info("In AnchoredRule(): input is " + input.toString());
 			RuleOutput output = getCachedOutput(input);
+			log.info("In AnchoredRule(): output is " + output.toString());
 			log.info("In AnchoredRule(): prev relevant is " + relevant);
 			relevant = relevant || !output.isVoid();
 			log.info("In AnchoredRule(): after relevant is " + relevant);
@@ -145,8 +158,18 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 			for (Map.Entry<Effect, Parameter> o : output.getPairs()) {
 				Effect effect = o.getKey();
 				Parameter param = o.getValue();
+				log.info("output effect is " + effect.toString() + "; effect assignment is " + effect.getAssignment().toString() + "; param is " + param.toString());
 				effects.add(effect);
 				outputs.addAssign(effect.getAssignment());
+				if (param instanceof FixedParameter) {
+					log.info("is FixedParameter");
+				}
+				else if (param instanceof SingleParameter) {
+					log.info("is SingleParameter");
+				}
+				else if (param instanceof ComplexParameter) {
+					log.info("is ComplexParameter");
+				}
 				param.getVariables().stream().filter(p -> state.hasChanceNode(p))
 						.forEach(p -> parameters.add(p));
 			}
@@ -388,6 +411,7 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 	private RuleOutput getCachedOutput(Assignment input) {
 
 		if (cache == null) {
+			log.info("getCachedOutput input is " + input.toString() + "; filledSlots is " + filledSlots.toString());
 			return rule.getOutput(new Assignment(input, filledSlots));
 		}
 		else if (input.size() > variables.size()) {

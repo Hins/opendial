@@ -75,6 +75,7 @@ public class ChanceNode extends BNode {
 			log.warning(nodeId + "  != " + distrib.getVariable());
 		}
 		this.distrib = distrib;
+		log.info("ChanceNode(): distrib is " + distrib.toString());
 	}
 
 	/**
