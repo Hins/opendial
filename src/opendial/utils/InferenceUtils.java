@@ -132,6 +132,9 @@ public class InferenceUtils {
 								.map(v -> new Assignment(a, label, v)).sequential())
 						.collect(Collectors.toSet());
 			}
+			for (Assignment a : assignments) {
+				log.info("getAllCombinations() key is " + a.getPairs().keySet() + "; value is " + a.getPairs().values().stream().map(v -> v.toString()).collect(Collectors.toSet()));
+			}
 			return assignments;
 		}
 		catch (OutOfMemoryError e) {

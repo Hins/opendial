@@ -139,6 +139,7 @@ class RegexTemplate implements Template {
 				if (!StringUtils.checkForm(filledValue) && permutatePattern()) {
 					return match(str);
 				}
+				log.info("RegexTemplate slot is " + slot + "; value is " + filledValue);
 				result.addPair(slot, filledValue);
 			}
 

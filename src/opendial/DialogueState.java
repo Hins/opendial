@@ -511,8 +511,9 @@ public class DialogueState extends BNetwork {
 					.map(c -> t.match(c)).filter(r -> r.isMatching())
 					.forEach(r -> range.addAssign(r));
 		}
+
 		log.info("getMatchingSlots() range size is " + range.getNbCombinations());
-		log.info("getMatchingSlots() range value variables is " + range.toString());
+		log.info("getMatchingSlots() range value variables is " + range.getVariables());
 		return range;
 	}
 

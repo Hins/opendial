@@ -99,6 +99,7 @@ public class ValueRange {
 		if (!range.containsKey(variable)) {
 			range.put(variable, new HashSet<Value>());
 		}
+		// log.info("addValue(): val is " + val.toString() + "; variable is " + variable);
 		range.get(variable).add(val);
 	}
 
@@ -145,6 +146,7 @@ public class ValueRange {
 	public Set<Assignment> linearise() {
 		if (range.size() == 1) {
 			String var = range.keySet().iterator().next();
+			log.info("linearise() size is 1, variable is " + var + "; value is " + range.get(var).stream().map(v -> v.toString()).collect(Collectors.toSet()));
 			return range.get(var).stream().map(v -> new Assignment(var, v))
 					.collect(Collectors.toSet());
 		}

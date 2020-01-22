@@ -58,7 +58,7 @@ public class Settings {
 	final static Logger log = Logger.getLogger("OpenDial");
 
 	/** Default settings */
-	public static final String SETTINGS_FILE = "resources//settings.xml";
+	public static final String SETTINGS_FILE = "/home/work/xtpan/opendial/resources/settings.xml";
 
 	/** maximum number of samples to use for likelihood weighting */
 	public static int nbSamples = 3000;

@@ -187,7 +187,6 @@ public final class BasicCondition implements Condition {
 		if (!variable.isFilledBy(input) || !templateValue.isFilledBy(input)) {
 			return false;
 		}
-		log.info("pass");
 		BasicCondition grounded = new BasicCondition(this, input);
 		Value actualValue = input.getValue(grounded.variable.toString());
 		return grounded.isSatisfied(actualValue);

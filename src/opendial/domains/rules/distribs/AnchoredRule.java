@@ -150,10 +150,12 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 
 			log.info("In AnchoredRule(): input is " + input.toString());
 			RuleOutput output = getCachedOutput(input);
-			log.info("In AnchoredRule(): output is " + output.toString());
+			// log.info("In AnchoredRule(): output is " + output.toString());
 			log.info("In AnchoredRule(): prev relevant is " + relevant);
 			relevant = relevant || !output.isVoid();
-			log.info("In AnchoredRule(): after relevant is " + relevant);
+			if (relevant == true) {
+				log.info("In AnchoredRule(): output is " + output.toString());
+			}
 			// looping on all alternative effects in the output
 			for (Map.Entry<Effect, Parameter> o : output.getPairs()) {
 				Effect effect = o.getKey();
@@ -173,6 +175,9 @@ public final class AnchoredRule implements ProbDistribution, UtilityFunction {
 				param.getVariables().stream().filter(p -> state.hasChanceNode(p))
 						.forEach(p -> parameters.add(p));
 			}
+		}
+		if (parameters.size() != 0) {
+			log.info("AnchoredRule parameters is " + parameters);
 		}
 		// adding the action variables, and activating the cache
 		if (relevant && rule.getRuleType() == RuleType.UTIL) {

@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.Collection;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import opendial.datastructs.Assignment;
 import opendial.domains.rules.conditions.Condition;
@@ -137,6 +139,7 @@ public class Rule {
 			log.info("getInputVariables() t is " + t.toString());
 		}
 		log.info("getInputVariables() inputVars size is " + inputVars.size()); */
+		log.info("current rule is " + this.toString() + "; slot contains " + inputVars.stream().map(r -> r.toString()).collect(Collectors.toSet()));
 		return inputVars;
 	}
 
